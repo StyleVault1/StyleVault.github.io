@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StyleVault</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --g: #C8A84B;
+  --g2: #E8C96B;
+  --g3: #8B6914;
+  --ink: #0A090C;
+  --ink2: #141218;
+  --ink3: #1E1B22;
+  --ink4: #28242E;
+  --fog: rgba(200,168,75,.12);
+  --t1: #F2EDE4;
+  --t2: #9D9590;
+  --t3: #5C5650;
+  --red: #D95858;
+  --grn: #5BA870;
+  --bdr: rgba(200,168,75,.16);
+  --r: 12px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--ink);color:var(--t1);font-family:'Syne',sans-serif;min-height:100vh;overflow-x:hidden;}
+::selection{background:rgba(200,168,75,.3);}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:var(--ink4);border-radius:4px;}
+
+.hide{display:none!important;}
+.screen{display:none;min-height:100vh;}
+.screen.on{display:flex;}
+
+/* ── LOGIN ── */
+#sLogin{
+  align-items:center;justify-content:center;
+  background:conic-gradient(from 220deg at 30% 70%,#0A090C 0deg,#0f0d13 90deg,#130e08 180deg,#0A090C 360deg);
+  position:relative;overflow:hidden;
+}
+#sLogin::before{
+  content:'';position:absolute;inset:-50%;width:200%;height:200%;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
+  animation:grain 8s steps(10) infinite;pointer-events:none;opacity:.6;
+}
+@keyframes grain{
+  0%{transform:translate(0,0)}10%{transform:translate(-2%,-3%)}20%{transform:translate(3%,1%)}
+  30%{transform:translate(-1%,4%)}40%{transform:translate(2%,-2%)}50%{transform:translate(-3%,3%)}
+  60%{transform:translate(1%,-1%)}70%{transform:translate(-2%,2%)}80%{transform:translate(3%,-3%)}
+  90%{transform:translate(-1%,1%)}100%{transform:translate(0,0)}
+}
+.orb{position:absolute;border-radius:50%;pointer-events:none;filter:blur(100px);}
+.orb-a{width:500px;height:500px;background:radial-gradient(circle,rgba(200,168,75,.15),transparent 70%);top:-150px;left:-150px;animation:drift1 12s ease-in-out infinite;}
+.orb-b{width:400px;height:400px;background:radial-gradient(circle,rgba(139,60,20,.12),transparent 70%);bottom:-100px;right:-100px;animation:drift2 15s ease-in-out infinite;}
+@keyframes drift1{0%,100%{transform:translate(0,0)}50%{transform:translate(60px,40px)}}
+@keyframes drift2{0%,100%{transform:translate(0,0)}50%{transform:translate(-50px,-30px)}}
+
+.login-wrap{position:relative;z-index:1;width:min(400px,90vw);animation:riseIn .6s cubic-bezier(.22,1,.36,1) both;}
+@keyframes riseIn{from{opacity:0;transform:translateY(32px)}to{opacity:1;transform:none}}
+
+.brand-mark{text-align:center;margin-bottom:2.5rem;}
+.brand-mark .wordmark{
+  font-family:'Cormorant Garamond',serif;font-size:3.2rem;font-weight:300;letter-spacing:8px;
+  background:linear-gradient(135deg,var(--g3) 0%,var(--g) 40%,var(--g2) 70%,var(--g) 100%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  text-transform:uppercase;
+}
+.brand-mark .sub{font-size:.6rem;letter-spacing:6px;color:var(--t3);text-transform:uppercase;margin-top:6px;}
+
+.auth-card{
+  background:rgba(20,18,24,.85);backdrop-filter:blur(24px);
+  border:1px solid var(--bdr);border-radius:20px;padding:2.4rem 2.4rem 2rem;
+  box-shadow:0 40px 80px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.04);
+}
+.tab-row{display:flex;background:rgba(255,255,255,.04);border-radius:10px;padding:4px;margin-bottom:2rem;border:1px solid rgba(255,255,255,.06);}
+.tab-btn{flex:1;padding:9px;border-radius:7px;border:none;background:transparent;color:var(--t3);font-family:'Syne',sans-serif;font-size:.78rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .25s;}
+.tab-btn.on{background:var(--g);color:var(--ink);}
+.form-pane{display:none;}
+.form-pane.on{display:block;}
+.fg{margin-bottom:1rem;}
+.fg label{display:block;font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:7px;}
+.fg input{width:100%;padding:11px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:9px;color:var(--t1);font-family:'Syne',sans-serif;font-size:.9rem;outline:none;transition:all .2s;}
+.fg input:focus{border-color:var(--g);background:rgba(200,168,75,.06);}
+.fg input::placeholder{color:var(--t3);}
+.auth-err{min-height:1.1em;font-size:.75rem;color:var(--red);text-align:center;margin-bottom:.9rem;}
+.btn-auth{
+  width:100%;padding:13px;border:none;border-radius:10px;
+  background:linear-gradient(135deg,var(--g3),var(--g),var(--g2));
+  color:var(--ink);font-family:'Syne',sans-serif;font-size:.8rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;
+  cursor:pointer;transition:all .2s;position:relative;overflow:hidden;
+}
+.btn-auth::after{content:'';position:absolute;inset:0;background:linear-gradient(transparent,rgba(255,255,255,.15));opacity:0;transition:.2s;}
+.btn-auth:hover::after{opacity:1;}
+.btn-auth:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(200,168,75,.3);}
+.btn-auth:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+
+/* ── APP ── */
+#sApp{flex-direction:column;}
+nav{
+  height:58px;background:rgba(14,12,18,.95);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;
+  padding:0 1.6rem;position:sticky;top:0;z-index:200;flex-shrink:0;
+}
+.nav-brand{
+  font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:300;letter-spacing:5px;text-transform:uppercase;
+  background:linear-gradient(135deg,var(--g),var(--g2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+.nav-r{display:flex;align-items:center;gap:10px;}
+.pill{display:flex;align-items:center;gap:8px;padding:5px 12px 5px 6px;border-radius:20px;background:var(--ink3);border:1px solid var(--bdr);}
+.avatar-dot{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--g3),var(--g));display:flex;align-items:center;justify-content:center;font-size:.66rem;font-weight:800;color:var(--ink);}
+.pill-name{font-size:.75rem;color:var(--t2);letter-spacing:.5px;}
+.nbtn{padding:6px 14px;border-radius:20px;border:none;font-family:'Syne',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.nbtn-ghost{background:transparent;border:1px solid var(--bdr);color:var(--t3);}
+.nbtn-ghost:hover{border-color:var(--g);color:var(--g);}
+.nbtn-gold{background:var(--g);color:var(--ink);}
+
+.app-body{display:flex;flex:1;overflow:hidden;height:calc(100vh - 58px);}
+
+/* LEFT PANEL */
+.left-panel{width:330px;flex-shrink:0;background:var(--ink2);border-right:1px solid var(--bdr);display:flex;flex-direction:column;overflow:hidden;}
+.lp-head{padding:1.2rem 1.4rem 1rem;border-bottom:1px solid var(--bdr);}
+.lp-label{font-size:.55rem;letter-spacing:3px;text-transform:uppercase;color:var(--t3);margin-bottom:3px;}
+.lp-title{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:300;color:var(--t2);}
+.avatar-stage{flex:1;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 60%,#130f0a 0%,var(--ink2) 70%);cursor:grab;user-select:none;position:relative;overflow:hidden;}
+.avatar-stage:active{cursor:grabbing;}
+.stage-hint{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-size:.6rem;letter-spacing:2px;color:var(--t3);text-transform:uppercase;display:flex;align-items:center;gap:6px;pointer-events:none;}
+.stage-hint i{animation:spinpulse 2s ease-in-out infinite;}
+@keyframes spinpulse{0%,100%{opacity:.3;transform:rotate(0deg)}50%{opacity:.9;transform:rotate(20deg)}}
+
+.outfit-section{padding:1rem 1.2rem;border-top:1px solid var(--bdr);}
+.slot-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:10px;}
+.slot{background:var(--ink3);border:1px solid var(--bdr);border-radius:10px;padding:8px 10px;min-height:50px;transition:border-color .2s;}
+.slot:hover{border-color:rgba(200,168,75,.3);}
+.slot-cat{font-size:.55rem;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:3px;}
+.slot-item{font-size:.76rem;color:var(--g);font-weight:600;line-height:1.3;}
+.slot-none{font-size:.72rem;color:var(--t3);font-style:italic;}
+
+.ai-cta{
+  width:100%;padding:11px;border-radius:10px;border:1px solid rgba(200,168,75,.35);
+  background:linear-gradient(135deg,rgba(200,168,75,.06),rgba(200,168,75,.12));color:var(--g);
+  font-family:'Syne',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  cursor:pointer;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.ai-cta:hover{background:linear-gradient(135deg,rgba(200,168,75,.12),rgba(200,168,75,.22));border-color:var(--g);}
+.ai-cta:disabled{opacity:.4;cursor:not-allowed;}
+.ai-output{margin-top:8px;padding:10px 12px;border-radius:9px;background:var(--ink3);border:1px solid var(--bdr);font-family:'Cormorant Garamond',serif;font-size:.92rem;font-weight:300;color:var(--t2);line-height:1.65;display:none;max-height:100px;overflow-y:auto;font-style:italic;}
+.ai-output.on{display:block;}
+
+/* RIGHT PANEL */
+.right-panel{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.cat-topbar{padding:1.2rem 1.6rem 0;background:var(--ink2);border-bottom:1px solid var(--bdr);}
+.search-row{display:flex;gap:10px;margin-bottom:1.1rem;align-items:center;}
+.search-wrap{flex:1;position:relative;}
+.search-wrap input{width:100%;padding:10px 14px 10px 40px;background:var(--ink3);border:1px solid var(--bdr);border-radius:10px;color:var(--t1);font-family:'Syne',sans-serif;font-size:.85rem;outline:none;transition:all .2s;}
+.search-wrap input:focus{border-color:var(--g);}
+.search-wrap input::placeholder{color:var(--t3);}
+.s-ico{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:.85rem;color:var(--t3);pointer-events:none;}
+.sort-sel{padding:10px 13px;background:var(--ink3);border:1px solid var(--bdr);border-radius:10px;color:var(--t1);font-family:'Syne',sans-serif;font-size:.78rem;outline:none;cursor:pointer;}
+.sort-sel option{background:var(--ink3);}
+
+.style-tabs{display:flex;overflow-x:auto;scrollbar-width:none;}
+.style-tabs::-webkit-scrollbar{display:none;}
+.stab{padding:9px 20px;border:none;background:transparent;font-family:'Syne',sans-serif;font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;transition:all .2s;}
+.stab.on{color:var(--g);border-bottom-color:var(--g);}
+.stab:hover:not(.on){color:var(--t1);}
+
+.cat-chips{padding:.75rem 1.6rem;background:var(--ink2);border-bottom:1px solid var(--bdr);display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;}
+.cat-chips::-webkit-scrollbar{display:none;}
+.chip{padding:5px 16px;border-radius:20px;border:1px solid var(--bdr);background:transparent;font-family:'Syne',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--t3);cursor:pointer;white-space:nowrap;transition:all .2s;}
+.chip.on{background:var(--g);color:var(--ink);border-color:var(--g);}
+.chip:hover:not(.on){border-color:var(--g);color:var(--g);}
+
+.grid-scroll{flex:1;overflow-y:auto;padding:1.4rem 1.6rem;}
+.item-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:13px;}
+.state-msg{grid-column:1/-1;text-align:center;padding:3.5rem;color:var(--t3);}
+.loading-dots span{display:inline-block;animation:ldot .9s infinite both;}
+.loading-dots span:nth-child(2){animation-delay:.18s;}
+.loading-dots span:nth-child(3){animation-delay:.36s;}
+@keyframes ldot{0%,80%,100%{opacity:.15;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
+
+/* ITEM CARD */
+.item-card{background:var(--ink2);border:1px solid var(--bdr);border-radius:var(--r);overflow:hidden;transition:all .22s;cursor:pointer;position:relative;}
+.item-card:hover{border-color:rgba(200,168,75,.45);transform:translateY(-3px);box-shadow:0 16px 40px rgba(0,0,0,.5);}
+.item-card.on{border-color:var(--g);box-shadow:0 0 0 2px rgba(200,168,75,.4);}
+
+.card-thumb{height:160px;display:flex;align-items:center;justify-content:center;background:var(--ink3);font-size:3.6rem;position:relative;overflow:hidden;}
+.card-thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .35s ease;}
+.item-card:hover .card-thumb img{transform:scale(1.06);}
+.card-thumb .fallback-emoji{position:relative;z-index:0;}
+.card-thumb::after{content:'';position:absolute;bottom:0;left:0;right:0;height:55px;background:linear-gradient(transparent,var(--ink2));pointer-events:none;z-index:2;}
+.card-badge{position:absolute;top:9px;left:9px;z-index:3;padding:3px 9px;border-radius:20px;font-size:.58rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;}
+.b-new{background:rgba(200,168,75,.18);color:var(--g);border:1px solid rgba(200,168,75,.35);}
+.b-sale{background:rgba(217,88,88,.15);color:var(--red);border:1px solid rgba(217,88,88,.35);}
+
+.card-body{padding:10px 12px 12px;}
+.c-brand{font-size:.58rem;letter-spacing:2.5px;text-transform:uppercase;color:var(--t3);margin-bottom:3px;}
+.c-name{font-size:.84rem;font-weight:600;margin-bottom:7px;line-height:1.3;color:var(--t1);}
+.c-price{font-size:.95rem;font-weight:700;color:var(--g);margin-bottom:9px;}
+.c-price .old{font-size:.75rem;text-decoration:line-through;color:var(--t3);margin-right:5px;font-weight:400;}
+.c-sale{color:var(--red);}
+
+.card-btns{display:flex;gap:6px;}
+.btn-wear{flex:1;padding:7px;border-radius:7px;border:none;background:linear-gradient(135deg,var(--g3),var(--g));color:var(--ink);font-family:'Syne',sans-serif;font-size:.65rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.btn-wear:hover{opacity:.9;}
+.btn-wear.worn{background:var(--grn);}
+.btn-preview{padding:7px 9px;border-radius:7px;background:var(--ink3);border:1px solid var(--bdr);color:var(--t2);font-size:.78rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;}
+.btn-preview:hover{border-color:var(--g);color:var(--g);}
+
+/* DETAIL SLIDE */
+.detail-slide{position:fixed;right:0;top:0;bottom:0;width:340px;background:var(--ink2);border-left:1px solid var(--bdr);z-index:300;transform:translateX(100%);transition:transform .3s cubic-bezier(.22,1,.36,1);display:flex;flex-direction:column;box-shadow:-20px 0 60px rgba(0,0,0,.5);}
+.detail-slide.open{transform:none;}
+.ds-top{padding:1.2rem 1.4rem;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;}
+.ds-close{padding:6px 10px;border-radius:7px;border:1px solid var(--bdr);background:transparent;color:var(--t3);cursor:pointer;font-size:1rem;transition:all .2s;}
+.ds-close:hover{border-color:var(--red);color:var(--red);}
+.ds-body{flex:1;overflow-y:auto;padding:1.4rem;}
+.ds-photo{width:100%;height:220px;border-radius:12px;overflow:hidden;background:var(--ink3);display:flex;align-items:center;justify-content:center;font-size:5rem;margin-bottom:1.2rem;position:relative;}
+.ds-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.ds-brand{font-size:.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--t3);margin-bottom:4px;}
+.ds-name{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;margin-bottom:8px;line-height:1.2;}
+.ds-style{display:inline-block;padding:4px 12px;border-radius:20px;font-size:.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;background:var(--fog);border:1px solid var(--bdr);color:var(--g);margin-bottom:1rem;}
+.ds-price{font-size:1.6rem;font-weight:700;color:var(--g);margin-bottom:1.4rem;}
+.ds-wear{width:100%;padding:13px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--g3),var(--g),var(--g2));color:var(--ink);font-family:'Syne',sans-serif;font-size:.75rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;margin-bottom:10px;display:block;}
+.ds-wear:hover{opacity:.9;transform:translateY(-1px);}
+.ds-wear.worn{background:var(--grn);}
+.ds-shoplink{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;border-radius:10px;border:1px solid var(--bdr);background:transparent;color:var(--t2);font-family:'Syne',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .2s;text-decoration:none;}
+.ds-shoplink:hover{border-color:var(--g);color:var(--g);}
+.ds-no-link{text-align:center;font-size:.7rem;color:var(--t3);padding:10px;font-style:italic;}
+
+/* ── ADMIN ── */
+#sAdmin{flex-direction:column;}
+.admin-nav{height:58px;background:rgba(14,12,18,.95);border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;padding:0 1.6rem;flex-shrink:0;}
+.admin-nav .brand{display:flex;align-items:center;gap:10px;font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:300;letter-spacing:4px;color:var(--g);}
+.adm-tag{font-family:'Syne',sans-serif;font-size:.55rem;padding:3px 8px;border-radius:4px;background:rgba(200,168,75,.15);border:1px solid rgba(200,168,75,.3);color:var(--g);letter-spacing:2px;text-transform:uppercase;}
+
+.admin-layout{display:flex;flex:1;overflow:hidden;height:calc(100vh - 58px);}
+.admin-side{width:200px;background:var(--ink2);border-right:1px solid var(--bdr);padding:.8rem 0;flex-shrink:0;}
+.asi{padding:10px 1.4rem;font-size:.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);cursor:pointer;transition:all .2s;border-left:3px solid transparent;display:flex;align-items:center;gap:10px;}
+.asi.on{color:var(--g);border-left-color:var(--g);background:rgba(200,168,75,.05);}
+.asi:hover:not(.on){color:var(--t1);}
+.asi-sep{height:1px;background:var(--bdr);margin:6px 1rem;}
+
+.admin-main{flex:1;overflow-y:auto;padding:2rem;}
+.asec{display:none;}
+.asec.on{display:block;}
+.asec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;}
+.asec-title{font-family:'Cormorant Garamond',serif;font-size:1.9rem;font-weight:300;color:var(--g);}
+
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:1.5rem;}
+.stat{background:var(--ink2);border:1px solid var(--bdr);border-radius:var(--r);padding:1.2rem 1.4rem;}
+.stat-l{font-size:.58rem;letter-spacing:2.5px;text-transform:uppercase;color:var(--t3);margin-bottom:8px;}
+.stat-v{font-size:2.2rem;font-weight:800;color:var(--g);line-height:1;}
+.stat-n{font-size:.68rem;color:var(--t3);margin-top:4px;}
+.info-card{background:var(--ink2);border:1px solid var(--bdr);border-radius:var(--r);padding:1.5rem;}
+
+.tbl-wrap{background:var(--ink2);border:1px solid var(--bdr);border-radius:var(--r);overflow:hidden;}
+.dtbl{width:100%;border-collapse:collapse;}
+.dtbl th{padding:10px 14px;text-align:left;font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--t3);border-bottom:1px solid var(--bdr);background:var(--ink3);}
+.dtbl td{padding:11px 14px;font-size:.82rem;color:var(--t1);border-bottom:1px solid rgba(255,255,255,.04);}
+.dtbl tr:last-child td{border-bottom:none;}
+.dtbl tr:hover td{background:rgba(255,255,255,.02);}
+
+.rpill{display:inline-block;padding:2px 9px;border-radius:20px;font-size:.6rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;}
+.r-admin{background:rgba(200,168,75,.16);color:var(--g);border:1px solid rgba(200,168,75,.3);}
+.r-user{background:rgba(91,168,112,.12);color:var(--grn);border:1px solid rgba(91,168,112,.25);}
+
+.row-acts{display:flex;gap:5px;flex-wrap:wrap;}
+.tbtn{padding:4px 10px;border-radius:6px;border:1px solid var(--bdr);background:transparent;color:var(--t3);font-size:.68rem;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:.5px;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.tbtn:hover{border-color:var(--g);color:var(--g);}
+.tbtn.del:hover{border-color:var(--red);color:var(--red);}
+/* Role toggle button */
+.tbtn.promote{border-color:rgba(200,168,75,.4);color:var(--g);}
+.tbtn.promote:hover{background:rgba(200,168,75,.12);}
+.tbtn.demote{border-color:rgba(217,88,88,.4);color:var(--red);}
+.tbtn.demote:hover{background:rgba(217,88,88,.1);}
+
+.btn-adm{padding:8px 18px;border-radius:9px;border:none;background:linear-gradient(135deg,var(--g3),var(--g));color:var(--ink);font-family:'Syne',sans-serif;font-size:.7rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.btn-adm:hover{opacity:.9;}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);z-index:500;display:none;align-items:center;justify-content:center;}
+.modal-bg.open{display:flex;}
+.modal{background:var(--ink2);border:1px solid var(--bdr);border-radius:20px;padding:2rem;width:min(500px,92vw);max-height:88vh;overflow-y:auto;box-shadow:0 40px 80px rgba(0,0,0,.6);animation:riseIn .25s cubic-bezier(.22,1,.36,1) both;}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:300;color:var(--g);margin-bottom:1.4rem;}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+.mgrid .full{grid-column:1/-1;}
+.mfg{margin:0;}
+.mfg label{display:block;font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:6px;}
+.mfg input,.mfg select,.mfg textarea{width:100%;padding:9px 12px;background:var(--ink3);border:1px solid var(--bdr);border-radius:8px;color:var(--t1);font-family:'Syne',sans-serif;font-size:.85rem;outline:none;transition:border-color .2s;}
+.mfg textarea{resize:vertical;min-height:60px;}
+.mfg input:focus,.mfg select:focus,.mfg textarea:focus{border-color:var(--g);}
+.mfg select option{background:var(--ink3);}
+.modal-foot{display:flex;gap:10px;justify-content:flex-end;margin-top:1.4rem;}
+.btn-cx{padding:9px 20px;border-radius:8px;border:1px solid var(--bdr);background:transparent;color:var(--t2);font-size:.78rem;font-family:'Syne',sans-serif;cursor:pointer;}
+.btn-cx:hover{border-color:var(--t2);}
+.btn-sv{padding:9px 24px;border-radius:8px;border:none;background:linear-gradient(135deg,var(--g3),var(--g));color:var(--ink);font-size:.78rem;font-weight:800;font-family:'Syne',sans-serif;letter-spacing:1px;text-transform:uppercase;cursor:pointer;}
+.btn-sv:hover{opacity:.9;}
+
+/* photo preview */
+.photo-preview-wrap{grid-column:1/-1;display:none;}
+.photo-preview-wrap img{width:100%;height:160px;object-fit:cover;border-radius:8px;border:1px solid var(--bdr);}
+
+/* TOAST */
+.toast{position:fixed;bottom:22px;right:22px;z-index:999;background:var(--ink3);border:1px solid var(--bdr);border-radius:10px;padding:11px 18px;font-size:.8rem;font-weight:600;box-shadow:0 8px 30px rgba(0,0,0,.5);transform:translateY(50px);opacity:0;transition:all .3s cubic-bezier(.22,1,.36,1);pointer-events:none;}
+.toast.on{transform:none;opacity:1;}
+.toast.ok{border-color:rgba(91,168,112,.4);color:var(--grn);}
+.toast.err{border-color:rgba(217,88,88,.4);color:var(--red);}
+</style>
+</head>
+<body>
+
+<!-- ████ LOGIN ████ -->
+<div class="screen on" id="sLogin">
+  <div class="orb orb-a"></div>
+  <div class="orb orb-b"></div>
+  <div class="login-wrap">
+    <div class="brand-mark">
+      <div class="wordmark">StyleVault</div>
+      <div class="sub">Your AI Fashion Companion</div>
+    </div>
+    <div class="auth-card">
+      <div class="tab-row">
+        <button class="tab-btn on" onclick="authTab('login')">Sign In</button>
+        <button class="tab-btn" onclick="authTab('register')">Register</button>
+      </div>
+      <div class="auth-err" id="authErr"></div>
+      <div class="form-pane on" id="fpLogin">
+        <div class="fg"><label>Email</label><input type="email" id="liEmail" placeholder="you@example.com" autocomplete="email"></div>
+        <div class="fg"><label>Password</label><input type="password" id="liPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+        <button class="btn-auth" id="btnLogin" onclick="doLogin()">Sign In</button>
+      </div>
+      <div class="form-pane" id="fpReg">
+        <div class="fg"><label>Full Name</label><input type="text" id="regName" placeholder="Your Name"></div>
+        <div class="fg"><label>Email</label><input type="email" id="regEmail" placeholder="you@example.com"></div>
+        <div class="fg"><label>Password</label><input type="password" id="regPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doRegister()"></div>
+        <button class="btn-auth" id="btnReg" onclick="doRegister()">Create Account</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ████ MAIN APP ████ -->
+<div class="screen" id="sApp">
+  <nav>
+    <div class="nav-brand">StyleVault</div>
+    <div class="nav-r">
+      <div class="pill"><div class="avatar-dot" id="navIni">?</div><span class="pill-name" id="navName">—</span></div>
+      <button class="nbtn nbtn-ghost" id="adminBtn" onclick="gotoAdmin()" style="display:none">⚙ Admin</button>
+      <button class="nbtn nbtn-ghost" onclick="logout()">Sign Out</button>
+    </div>
+  </nav>
+
+  <div class="app-body">
+    <!-- LEFT -->
+    <div class="left-panel">
+      <div class="lp-head">
+        <div class="lp-label">Your Look</div>
+        <div class="lp-title">Drag to spin the avatar</div>
+      </div>
+      <div class="avatar-stage" id="avatarStage">
+        <canvas id="avatarCanvas" width="290" height="310"></canvas>
+        <div class="stage-hint"><i>↻</i> Rotate</div>
+      </div>
+      <div class="outfit-section">
+        <div class="slot-grid">
+          <div class="slot"><div class="slot-cat">Top</div><div class="slot-item slot-none" id="sv-Tops">None</div></div>
+          <div class="slot"><div class="slot-cat">Bottom</div><div class="slot-item slot-none" id="sv-Bottoms">None</div></div>
+          <div class="slot"><div class="slot-cat">Shoes</div><div class="slot-item slot-none" id="sv-Shoes">None</div></div>
+          <div class="slot"><div class="slot-cat">Accessory</div><div class="slot-item slot-none" id="sv-Accessories">None</div></div>
+        </div>
+        <button class="ai-cta" id="aiBtn" onclick="doAI()">✦ AI Outfit Suggestion</button>
+        <div class="ai-output" id="aiOut"></div>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="right-panel">
+      <div class="cat-topbar">
+        <div class="search-row">
+          <div class="search-wrap">
+            <span class="s-ico">🔍</span>
+            <input type="text" id="searchIn" placeholder="Search styles, brands…" oninput="debSearch()">
+          </div>
+          <select class="sort-sel" id="sortSel" onchange="renderGrid()">
+            <option value="">Default</option>
+            <option value="price-asc">Price ↑</option>
+            <option value="price-desc">Price ↓</option>
+            <option value="name">Name A–Z</option>
+          </select>
+        </div>
+        <div class="style-tabs">
+          <button class="stab on" onclick="setStyle('all',this)">All</button>
+          <button class="stab" onclick="setStyle('Old Money',this)">Old Money</button>
+          <button class="stab" onclick="setStyle('Casual',this)">Casual</button>
+          <button class="stab" onclick="setStyle('Sporty',this)">Sporty</button>
+          <button class="stab" onclick="setStyle('Fancy',this)">Fancy</button>
+          <button class="stab" onclick="setStyle('Streetwear',this)">Streetwear</button>
+        </div>
+      </div>
+      <div class="cat-chips">
+        <button class="chip on" onclick="setCat('all',this)">All</button>
+        <button class="chip" onclick="setCat('Tops',this)">Tops</button>
+        <button class="chip" onclick="setCat('Bottoms',this)">Bottoms</button>
+        <button class="chip" onclick="setCat('Shoes',this)">Shoes</button>
+        <button class="chip" onclick="setCat('Accessories',this)">Accessories</button>
+      </div>
+      <div class="grid-scroll">
+        <div class="item-grid" id="itemGrid">
+          <div class="state-msg">
+            <div class="loading-dots"><span>●</span><span>●</span><span>●</span></div>
+            <p style="margin-top:10px;font-size:.8rem">Loading catalog…</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL SLIDE -->
+<div class="detail-slide" id="detailSlide">
+  <div class="ds-top">
+    <span style="font-size:.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--t3)">Item Detail</span>
+    <button class="ds-close" onclick="closeDetail()">✕</button>
+  </div>
+  <div class="ds-body" id="detailBody"></div>
+</div>
+
+<!-- ████ ADMIN ████ -->
+<div class="screen" id="sAdmin">
+  <div class="admin-nav">
+    <div class="brand">StyleVault <span class="adm-tag">Admin</span></div>
+    <div style="display:flex;gap:10px">
+      <button class="nbtn nbtn-ghost" onclick="gotoApp()">← App</button>
+      <button class="nbtn nbtn-ghost" onclick="logout()">Sign Out</button>
+    </div>
+  </div>
+
+  <div class="admin-layout">
+    <div class="admin-side">
+      <div class="asi on" onclick="aTab('dashboard',this)">📊 Dashboard</div>
+      <div class="asi" onclick="aTab('users',this)">👥 Users</div>
+      <div class="asi-sep"></div>
+      <div class="asi" onclick="aTab('clothing',this)">👗 Clothing</div>
+    </div>
+
+    <div class="admin-main">
+      <!-- Dashboard -->
+      <div class="asec on" id="sec-dashboard">
+        <div class="asec-hdr"><div class="asec-title">Dashboard</div></div>
+        <div class="stat-row">
+          <div class="stat"><div class="stat-l">Users</div><div class="stat-v" id="stUsers">—</div><div class="stat-n">registered</div></div>
+          <div class="stat"><div class="stat-l">Items</div><div class="stat-v" id="stItems">—</div><div class="stat-n">in catalog</div></div>
+          <div class="stat"><div class="stat-l">Styles</div><div class="stat-v">5</div><div class="stat-n">collections</div></div>
+          <div class="stat"><div class="stat-l">Backend</div><div class="stat-v" style="font-size:1.3rem">🗄️</div><div class="stat-n">JSON / Express</div></div>
+        </div>
+        <div class="info-card">
+          <p style="font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:300;color:var(--t2);line-height:2">
+            Welcome to the <span style="color:var(--g)">StyleVault Admin Panel</span>.<br>
+            Manage users and the clothing catalog. Use the <strong style="color:var(--t1)">Users</strong> tab to promote or demote accounts to Admin.<br>
+            Add clothing items with a photo URL and shop link so customers can buy directly.
+          </p>
+        </div>
+      </div>
+
+      <!-- Users -->
+      <div class="asec" id="sec-users">
+        <div class="asec-hdr">
+          <div class="asec-title">Users</div>
+          <button class="btn-adm" onclick="openModal('user')">+ Add User</button>
+        </div>
+        <div class="tbl-wrap">
+          <table class="dtbl">
+            <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Actions</th></tr></thead>
+            <tbody id="usersTbody"><tr><td colspan="4" style="color:var(--t3);text-align:center;padding:2rem">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Clothing -->
+      <div class="asec" id="sec-clothing">
+        <div class="asec-hdr">
+          <div class="asec-title">Clothing Catalog</div>
+          <button class="btn-adm" onclick="openModal('clothing')">+ Add Item</button>
+        </div>
+        <div class="tbl-wrap">
+          <table class="dtbl">
+            <thead><tr><th>Photo</th><th>Name</th><th>Brand</th><th>Style</th><th>Category</th><th>Price</th><th>Actions</th></tr></thead>
+            <tbody id="clothingTbody"><tr><td colspan="7" style="color:var(--t3);text-align:center;padding:2rem">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-title" id="mTitle">Add</div>
+    <div id="mBody"></div>
+    <div class="modal-foot">
+      <button class="btn-cx" onclick="closeModal()">Cancel</button>
+      <button class="btn-sv" onclick="saveModal()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══ STATE ═══
+let currentUser = null;
+let catalog = [];
+let wearing = {};
+let fStyle = 'all', fCat = 'all', searchQ = '';
+let sTimer = null, mMode = null, mTarget = {};
+
+// ═══ API ═══
+async function req(method, path, body) {
+  const opts = { method, headers: { 'Content-Type': 'application/json' } };
+  if (body) opts.body = JSON.stringify(body);
+  const r = await fetch(path, opts);
+  return r.json();
+}
+
+// ═══ TOAST ═══
+function toast(msg, type = 'ok') {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.className = `toast on ${type}`;
+  clearTimeout(el._t); el._t = setTimeout(() => el.className = 'toast', 3200);
+}
+
+// ═══ SCREENS ═══
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+}
+function gotoApp()   { show('sApp');   loadCatalog(); }
+function gotoAdmin() { show('sAdmin'); loadDashboard(); }
+
+// ═══ AUTH ═══
+function authTab(t) {
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('on', (i===0)===(t==='login')));
+  document.getElementById('fpLogin').classList.toggle('on', t==='login');
+  document.getElementById('fpReg').classList.toggle('on', t==='register');
+  document.getElementById('authErr').textContent = '';
+}
+
+async function doLogin() {
+  const email = document.getElementById('liEmail').value.trim();
+  const password = document.getElementById('liPass').value;
+  const btn = document.getElementById('btnLogin');
+  const err = document.getElementById('authErr');
+  err.textContent = '';
+  if (!email || !password) { err.textContent = 'Please fill all fields.'; return; }
+  btn.disabled = true; btn.textContent = 'Signing in…';
+  try {
+    const d = await req('POST', '/api/login', { email, password });
+    if (!d.ok) { err.textContent = d.error; return; }
+    setUser(d.user); show('sApp'); loadCatalog();
+  } catch(e) { err.textContent = 'Server error — is Express running?'; }
+  finally { btn.disabled = false; btn.textContent = 'Sign In'; }
+}
+
+async function doRegister() {
+  const name = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const password = document.getElementById('regPass').value;
+  const btn = document.getElementById('btnReg');
+  const err = document.getElementById('authErr');
+  err.textContent = '';
+  if (!name || !email || !password) { err.textContent = 'Please fill all fields.'; return; }
+  btn.disabled = true; btn.textContent = 'Creating…';
+  try {
+    const d = await req('POST', '/api/register', { name, email, password });
+    if (!d.ok) { err.textContent = d.error; return; }
+    setUser(d.user); show('sApp'); loadCatalog();
+  } catch(e) { err.textContent = 'Server error — is Express running?'; }
+  finally { btn.disabled = false; btn.textContent = 'Create Account'; }
+}
+
+function setUser(u) {
+  currentUser = u;
+  const ini = u.name.split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase();
+  document.getElementById('navIni').textContent = ini;
+  document.getElementById('navName').textContent = u.name;
+  document.getElementById('adminBtn').style.display = u.role === 'admin' ? 'block' : 'none';
+}
+
+function logout() { currentUser = null; wearing = {}; catalog = []; clearSlots(); show('sLogin'); }
+
+// ═══ CATALOG ═══
+async function loadCatalog() {
+  try {
+    catalog = await req('GET', '/api/clothing');
+    if (!Array.isArray(catalog)) catalog = [];
+    renderGrid();
+  } catch(e) {
+    document.getElementById('itemGrid').innerHTML = '<div class="state-msg">⚠ Could not connect to server.<br><small>Make sure Express is running on port 3000.</small></div>';
+  }
+}
+
+function setStyle(s, el) {
+  fStyle = s; fCat = 'all';
+  document.querySelectorAll('.stab').forEach(b => b.classList.remove('on')); el.classList.add('on');
+  document.querySelectorAll('.chip').forEach((b,i) => b.classList.toggle('on', i===0));
+  renderGrid();
+}
+function setCat(c, el) {
+  fCat = c;
+  document.querySelectorAll('.chip').forEach(b => b.classList.remove('on')); el.classList.add('on');
+  renderGrid();
+}
+function debSearch() { clearTimeout(sTimer); sTimer = setTimeout(() => { searchQ = document.getElementById('searchIn').value; renderGrid(); }, 260); }
+
+function renderGrid() {
+  let items = [...catalog];
+  if (fStyle !== 'all') items = items.filter(i => i.style === fStyle);
+  if (fCat   !== 'all') items = items.filter(i => i.category === fCat);
+  if (searchQ) {
+    const q = searchQ.toLowerCase();
+    items = items.filter(i => (i.name+i.brand+i.style+i.category+'').toLowerCase().includes(q));
+  }
+  const s = document.getElementById('sortSel').value;
+  if (s === 'price-asc')  items.sort((a,b) => +a.price - +b.price);
+  if (s === 'price-desc') items.sort((a,b) => +b.price - +a.price);
+  if (s === 'name')       items.sort((a,b) => (a.name+'').localeCompare(b.name+''));
+
+  const grid = document.getElementById('itemGrid');
+  if (!items.length) { grid.innerHTML = '<div class="state-msg">No items found.<br><small>Try a different filter.</small></div>'; return; }
+
+  grid.innerHTML = items.map(item => {
+    const isOn = wearing[item.category]?.id === item.id;
+    const price = item.salePrice
+      ? `<span class="old">$${item.price}</span><span class="c-sale">$${item.salePrice}</span>`
+      : `$${item.price}`;
+    const badge = item.badge === 'new'  ? '<span class="card-badge b-new">New</span>'
+                : item.badge === 'sale' ? '<span class="card-badge b-sale">Sale</span>' : '';
+    const thumbContent = item.photo
+      ? `<img src="${escAttr(item.photo)}" alt="${escAttr(item.name)}" onerror="this.style.display='none'">${badge}`
+      : `<span class="fallback-emoji">${item.emoji||'👕'}</span>${badge}`;
+    return `<div class="item-card${isOn?' on':''}">
+      <div class="card-thumb">${thumbContent}</div>
+      <div class="card-body">
+        <div class="c-brand">${esc(item.brand||'')}</div>
+        <div class="c-name">${esc(item.name)}</div>
+        <div class="c-price">${price}</div>
+        <div class="card-btns">
+          <button class="btn-wear${isOn?' worn':''}" onclick="event.stopPropagation();wearItem(${item.id})">${isOn?'✓ Wearing':'+ Wear It'}</button>
+          <button class="btn-preview" onclick="openDetail(${item.id})" title="View Details">▸</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══ WEAR ═══
+function wearItem(id) {
+  const item = catalog.find(i => i.id === id);
+  if (!item) return;
+  if (wearing[item.category]?.id === id) delete wearing[item.category];
+  else wearing[item.category] = item;
+  updateSlots(); renderGrid(); drawAvatar();
+  // refresh detail panel if open
+  if (document.getElementById('detailSlide').classList.contains('open')) openDetail(id);
+}
+
+function updateSlots() {
+  ['Tops','Bottoms','Shoes','Accessories'].forEach(cat => {
+    const el = document.getElementById('sv-' + cat);
+    const item = wearing[cat];
+    el.className = 'slot-item' + (item ? '' : ' slot-none');
+    el.textContent = item ? `${item.emoji||''} ${item.name}` : 'None';
+  });
+}
+function clearSlots() { wearing = {}; updateSlots(); drawAvatar(); }
+
+// ═══ DETAIL SLIDE ═══
+function openDetail(id) {
+  const item = catalog.find(i => i.id === id);
+  if (!item) return;
+  const isOn = wearing[item.category]?.id === id;
+
+  const photoHTML = item.photo
+    ? `<div class="ds-photo"><img src="${escAttr(item.photo)}" alt="${escAttr(item.name)}" onerror="this.parentElement.innerHTML='<span style=\\'font-size:5rem\\'>${item.emoji||'👕'}</span>'"></div>`
+    : `<div class="ds-photo" style="font-size:5rem">${item.emoji||'👕'}</div>`;
+
+  const shopBtn = item.link
+    ? `<a href="${escAttr(item.link)}" target="_blank" rel="noopener" class="ds-shoplink">🛒 Shop This Item</a>`
+    : `<div class="ds-no-link">No shop link added yet</div>`;
+
+  const priceHTML = item.salePrice
+    ? `<span style="text-decoration:line-through;color:var(--t3);font-size:1.1rem;margin-right:8px">$${item.price}</span><span style="color:var(--red)">$${item.salePrice}</span>`
+    : `$${item.price}`;
+
+  document.getElementById('detailBody').innerHTML = `
+    ${photoHTML}
+    <div class="ds-brand">${esc(item.brand||'')}</div>
+    <div class="ds-name">${esc(item.name)}</div>
+    <span class="ds-style">${esc(item.style)}</span>
+    <div class="ds-price">${priceHTML}</div>
+    <button class="ds-wear${isOn?' worn':''}" onclick="wearItem(${item.id})">${isOn?'✓ Currently Wearing':'+ Wear This Item'}</button>
+    ${shopBtn}
+  `;
+  document.getElementById('detailSlide').classList.add('open');
+}
+function closeDetail() { document.getElementById('detailSlide').classList.remove('open'); }
+
+// ═══ AVATAR ═══
+let angle=0, dragging=false, dragX0=0, dragA0=0, animId=null;
+
+function initAvatar() {
+  const stage = document.getElementById('avatarStage');
+  stage.addEventListener('mousedown', e => { dragging=true; dragX0=e.clientX; dragA0=angle; cancelAnimationFrame(animId); });
+  window.addEventListener('mousemove', e => { if(!dragging) return; angle=dragA0+(e.clientX-dragX0)*0.65; drawAvatar(); });
+  window.addEventListener('mouseup', () => { if(dragging){ dragging=false; autoSpin(); } });
+  stage.addEventListener('touchstart', e => { dragging=true; dragX0=e.touches[0].clientX; dragA0=angle; cancelAnimationFrame(animId); },{passive:true});
+  window.addEventListener('touchmove', e => { if(!dragging) return; angle=dragA0+(e.touches[0].clientX-dragX0)*0.65; drawAvatar(); },{passive:true});
+  window.addEventListener('touchend', () => { if(dragging){ dragging=false; autoSpin(); } });
+  autoSpin();
+}
+
+function autoSpin() {
+  const tick = () => { if(dragging) return; angle+=0.45; drawAvatar(); animId=requestAnimationFrame(tick); };
+  animId = requestAnimationFrame(tick);
+}
+
+function drawAvatar() {
+  const cv = document.getElementById('avatarCanvas');
+  const ctx = cv.getContext('2d');
+  const W=cv.width, H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  const rad = angle*Math.PI/180;
+  const sx = Math.cos(rad);
+  const ab = Math.abs(sx);
+  const fl = sx<0?-1:1;
+  const cx=W/2, by=H-22;
+  ctx.save();ctx.translate(cx,by);ctx.scale(1,.2);
+  const sg=ctx.createRadialGradient(0,0,6,0,0,55);
+  sg.addColorStop(0,'rgba(200,168,75,.25)');sg.addColorStop(1,'transparent');
+  ctx.fillStyle=sg;ctx.beginPath();ctx.arc(0,0,55,0,Math.PI*2);ctx.fill();ctx.restore();
+  const topC=styleColor(wearing['Tops']);
+  const botC=styleColor(wearing['Bottoms'],'#252035');
+  const shoC=wearing['Shoes']?'#1a1510':'#111';
+  [-1,1].forEach(s => {
+    const lx=cx+s*15*ab;
+    rrect(ctx,lx-9,by-115,18,78,8,botC);
+    ctx.fillStyle=shoC;ctx.beginPath();ctx.ellipse(lx+s*4*ab,by-37,12*ab+1,6,0,0,Math.PI*2);ctx.fill();
+  });
+  rrect(ctx,cx-25*ab-2,by-188,50*ab+4,80,11,topC);
+  [-1,1].forEach(s => {
+    const ax=cx+s*36*ab;
+    ctx.save();ctx.translate(ax,by-173);ctx.rotate(s*.17);
+    rrect(ctx,-7,0,14,60,7,topC);
+    ctx.fillStyle='#D4A574';ctx.beginPath();ctx.arc(3*s,62,6,0,Math.PI*2);ctx.fill();
+    ctx.restore();
+  });
+  rrect(ctx,cx-7,by-208,14,21,5,'#D4A574');
+  ctx.fillStyle='#D4A574';ctx.beginPath();ctx.ellipse(cx,by-234,25*ab+2,28,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#15100A';ctx.beginPath();ctx.ellipse(cx,by-258,23*ab+2,13,0,0,Math.PI);ctx.fill();
+  if(ab>.2){
+    ctx.fillStyle='#15100A';
+    ctx.beginPath();ctx.arc(cx+fl*7*ab,by-238,2.5,0,Math.PI*2);ctx.fill();
+    if(ab>.5){ctx.beginPath();ctx.arc(cx+fl*1.5*ab,by-238,2.5,0,Math.PI*2);ctx.fill();}
+    ctx.strokeStyle='#9B5A2B';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.arc(cx+fl*3*ab,by-226,6,.1,Math.PI-.1);ctx.stroke();
+  }
+  if(wearing['Accessories']){
+    ctx.font='16px serif';ctx.fillText(wearing['Accessories'].emoji||'⌚',cx+32*ab,by-155);
+  }
+  if(Object.keys(wearing).length){
+    const g=ctx.createRadialGradient(cx,by-130,25,cx,by-130,130);
+    g.addColorStop(0,'rgba(200,168,75,0)');g.addColorStop(1,'rgba(200,168,75,.06)');
+    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  }
+}
+
+function rrect(ctx,x,y,w,h,r,fill){
+  if(w<=0||h<=0)return;
+  ctx.fillStyle=fill;ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill();
+}
+function styleColor(item,fallback='#352e24'){
+  if(!item)return fallback;
+  return{'Old Money':'#3D3020','Casual':'#2C3A4A','Sporty':'#1E3A28','Fancy':'#28193E','Streetwear':'#2E2830'}[item.style]||fallback;
+}
+
+// ═══ AI ═══
+const CLAUDE_KEY = '';
+
+async function doAI() {
+  const btn=document.getElementById('aiBtn');
+  const out=document.getElementById('aiOut');
+  btn.disabled=true;btn.innerHTML='✦ Generating…';
+  out.className='ai-output on';out.textContent='Styling your look…';
+  const worn=Object.values(wearing).map(i=>`${i.name}(${i.style})`).join(', ')||'nothing yet';
+  const styles=[...new Set(catalog.map(i=>i.style))].join(', ');
+  if(!CLAUDE_KEY){
+    const tips=['Try a crisp Oxford shirt tucked into tailored chinos with clean white sneakers — effortlessly sharp.','Layer a structured blazer over a fitted tee, pair with slim joggers for elevated sporty chic.','Go Old Money with a cashmere crew neck, pressed trousers, and leather loafers. Add a pocket square.','Streetwear moment: oversized hoodie, cargo pants, and high-top dunks. Keep it monochrome.','Fancy affair: a sleek gown or tuxedo trousers with patent shoes and a statement accessory.'];
+    out.textContent=tips[Math.floor(Math.random()*tips.length)];
+    btn.disabled=false;btn.innerHTML='✦ AI Outfit Suggestion';
+    return;
+  }
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':CLAUDE_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:180,messages:[{role:'user',content:`Fashion stylist. Wearing: ${worn}. Catalog styles: ${styles}. Give 2-3 sentence outfit tip. Warm, specific, chic. No lists.`}]})
+    });
+    const d=await res.json();
+    out.textContent=d.content?.[0]?.text||'Mix a structured blazer with slim trousers for a sharp look!';
+  }catch(e){
+    out.textContent='Pair a structured top with well-fitted bottoms and clean footwear — always timeless.';
+  }finally{
+    btn.disabled=false;btn.innerHTML='✦ AI Outfit Suggestion';
+  }
+}
+
+// ═══ ADMIN ═══
+function aTab(tab, el) {
+  document.querySelectorAll('.asi').forEach(i=>i.classList.remove('on')); el.classList.add('on');
+  document.querySelectorAll('.asec').forEach(s=>s.classList.remove('on'));
+  document.getElementById('sec-'+tab).classList.add('on');
+  if(tab==='users')    loadUsers();
+  if(tab==='clothing') loadAdminClothing();
+  if(tab==='dashboard') loadDashboard();
+}
+
+async function loadDashboard() {
+  try {
+    const [clothing, users] = await Promise.all([req('GET','/api/clothing'), req('GET','/api/users')]);
+    document.getElementById('stItems').textContent = Array.isArray(clothing)?clothing.length:'?';
+    document.getElementById('stUsers').textContent = Array.isArray(users)?users.length:'?';
+    catalog = Array.isArray(clothing)?clothing:catalog;
+  } catch(e){}
+}
+
+async function loadUsers() {
+  const tb = document.getElementById('usersTbody');
+  tb.innerHTML='<tr><td colspan="4" style="color:var(--t3);text-align:center;padding:1.5rem">Loading…</td></tr>';
+  try {
+    const users = await req('GET','/api/users');
+    if(!Array.isArray(users)||!users.length){
+      tb.innerHTML='<tr><td colspan="4" style="color:var(--t3);text-align:center;padding:1.5rem">No users yet.</td></tr>';
+      document.getElementById('stUsers').textContent='0';
+      return;
+    }
+    document.getElementById('stUsers').textContent = users.length;
+    tb.innerHTML = users.map(u=>`<tr>
+      <td>${esc(u.name)}</td>
+      <td style="color:var(--t2)">${esc(u.email)}</td>
+      <td><span class="rpill ${u.role==='admin'?'r-admin':'r-user'}">${u.role||'user'}</span></td>
+      <td><div class="row-acts">
+        ${u.role==='admin'
+          ? `<button class="tbtn demote" onclick="toggleAdmin(${u.id},'user')">Demote</button>`
+          : `<button class="tbtn promote" onclick="toggleAdmin(${u.id},'admin')">Make Admin</button>`
+        }
+        <button class="tbtn del" onclick="delUser(${u.id})">Delete</button>
+      </div></td>
+    </tr>`).join('');
+  } catch(e) {
+    tb.innerHTML=`<tr><td colspan="4" style="color:var(--red);text-align:center;padding:1.5rem">${esc(e.message)}</td></tr>`;
+  }
+}
+
+// ★ NEW: toggle user admin role
+async function toggleAdmin(id, role) {
+  const label = role === 'admin' ? 'promote this user to admin' : 'demote this user to regular user';
+  if (!confirm(`Are you sure you want to ${label}?`)) return;
+  try {
+    const d = await req('POST', '/api/makeAdmin', { id, role });
+    if (!d.ok) throw new Error(d.error);
+    toast(role === 'admin' ? '⭐ User promoted to admin' : 'User demoted to regular');
+    loadUsers();
+  } catch(e) { toast(e.message, 'err'); }
+}
+
+async function delUser(id) {
+  if(!confirm('Delete this user?')) return;
+  try {
+    await req('POST','/api/deleteUser',{id});
+    toast('User deleted'); loadUsers();
+  } catch(e) { toast(e.message,'err'); }
+}
+
+async function loadAdminClothing() {
+  const tb = document.getElementById('clothingTbody');
+  tb.innerHTML='<tr><td colspan="7" style="color:var(--t3);text-align:center;padding:1.5rem">Loading…</td></tr>';
+  try {
+    const items = await req('GET','/api/clothing');
+    catalog = Array.isArray(items)?items:[];
+    document.getElementById('stItems').textContent = catalog.length;
+    tb.innerHTML = catalog.map(i=>`<tr>
+      <td>
+        ${i.photo
+          ? `<img src="${escAttr(i.photo)}" style="width:44px;height:44px;object-fit:cover;border-radius:6px;border:1px solid var(--bdr)" onerror="this.style.display='none';this.nextSibling.style.display='inline'">`
+          : ''
+        }
+        <span style="${i.photo?'display:none':''};font-size:1.4rem">${i.emoji||'👕'}</span>
+      </td>
+      <td>${esc(i.name)}</td>
+      <td style="color:var(--t2)">${esc(i.brand||'—')}</td>
+      <td><span style="font-size:.65rem;padding:2px 8px;border-radius:20px;background:rgba(200,168,75,.1);color:var(--g);border:1px solid rgba(200,168,75,.2)">${esc(i.style||'—')}</span></td>
+      <td style="color:var(--t2)">${esc(i.category||'—')}</td>
+      <td style="color:var(--g);font-weight:700">$${i.price}</td>
+      <td><div class="row-acts">
+        <button class="tbtn" onclick='editClothing(${JSON.stringify(i).replace(/'/g,"&#39;")})'>Edit</button>
+        <button class="tbtn del" onclick="delClothing(${i.id})">Delete</button>
+      </div></td>
+    </tr>`).join('');
+  } catch(e) { tb.innerHTML=`<tr><td colspan="7" style="color:var(--red);text-align:center;padding:1.5rem">${esc(e.message)}</td></tr>`; }
+}
+
+async function delClothing(id) {
+  if(!confirm('Delete this item?')) return;
+  try {
+    await req('POST','/api/deleteClothing',{id});
+    toast('Item deleted'); loadAdminClothing();
+  } catch(e) { toast(e.message,'err'); }
+}
+
+// ═══ MODAL ═══
+function openModal(mode, data={}) {
+  mMode=mode; mTarget=data;
+  document.getElementById('modalBg').classList.add('open');
+  const styles=['Old Money','Casual','Sporty','Fancy','Streetwear'];
+  const cats=['Tops','Bottoms','Shoes','Accessories'];
+
+  if(mode==='clothing') {
+    document.getElementById('mTitle').textContent = data.id?'Edit Item':'Add Item';
+    document.getElementById('mBody').innerHTML=`<div class="mgrid">
+      <div class="mfg full"><label>Item Name *</label><input id="cName" value="${escAttr(data.name||'')}" placeholder="e.g. Slim Fit Chinos"></div>
+      <div class="mfg"><label>Brand</label><input id="cBrand" value="${escAttr(data.brand||'')}" placeholder="e.g. Ralph Lauren"></div>
+      <div class="mfg"><label>Emoji Icon (fallback)</label><input id="cEmoji" value="${escAttr(data.emoji||'👕')}" maxlength="4"></div>
+
+      <div class="mfg full">
+        <label>📸 Photo URL <span style="color:var(--t3);font-weight:400;text-transform:none;letter-spacing:0">(paste a direct image link)</span></label>
+        <input id="cPhoto" value="${escAttr(data.photo||'')}" placeholder="https://example.com/image.jpg" oninput="previewPhoto(this.value)">
+      </div>
+      <div class="photo-preview-wrap" id="photoPreviewWrap" style="${data.photo?'display:block;grid-column:1/-1':''}">
+        <img id="photoPreview" src="${escAttr(data.photo||'')}" onerror="document.getElementById('photoPreviewWrap').style.display='none'" style="width:100%;height:160px;object-fit:cover;border-radius:8px;border:1px solid var(--bdr)">
+      </div>
+
+      <div class="mfg"><label>Style</label><select id="cStyle">${styles.map(s=>`<option ${data.style===s?'selected':''}>${s}</option>`).join('')}</select></div>
+      <div class="mfg"><label>Category</label><select id="cCat">${cats.map(c=>`<option ${data.category===c?'selected':''}>${c}</option>`).join('')}</select></div>
+      <div class="mfg"><label>Price ($) *</label><input id="cPrice" type="number" value="${data.price||''}" placeholder="0"></div>
+      <div class="mfg"><label>Sale Price (optional)</label><input id="cSale" type="number" value="${data.salePrice||''}" placeholder="leave blank if no sale"></div>
+      <div class="mfg full">
+        <label>🛒 Shop Link <span style="color:var(--t3);font-weight:400;text-transform:none;letter-spacing:0">(where to buy this item)</span></label>
+        <input id="cLink" value="${escAttr(data.link||'')}" placeholder="https://store.com/product-page">
+      </div>
+      <div class="mfg full"><label>Badge</label><select id="cBadge"><option value="">None</option><option value="new" ${data.badge==='new'?'selected':''}>New</option><option value="sale" ${data.badge==='sale'?'selected':''}>Sale</option></select></div>
+    </div>`;
+  }
+  if(mode==='user') {
+    document.getElementById('mTitle').textContent='Add User';
+    document.getElementById('mBody').innerHTML=`<div class="mgrid">
+      <div class="mfg full"><label>Full Name</label><input id="uName"></div>
+      <div class="mfg full"><label>Email</label><input id="uEmail" type="email"></div>
+      <div class="mfg full"><label>Password</label><input id="uPass" type="password"></div>
+    </div>`;
+  }
+}
+
+async function saveModal() {
+  try {
+    if(mMode==='clothing') {
+      const name = document.getElementById('cName').value.trim();
+      if(!name) { toast('Item name is required','err'); return; }
+      const body = {
+        name,
+        brand:     document.getElementById('cBrand').value.trim(),
+        emoji:     document.getElementById('cEmoji').value.trim() || '👕',
+        photo:     document.getElementById('cPhoto').value.trim(),
+        link:      document.getElementById('cLink').value.trim(),
+        style:     document.getElementById('cStyle').value,
+        category:  document.getElementById('cCat').value,
+        price:     parseFloat(document.getElementById('cPrice').value) || 0,
+        salePrice: document.getElementById('cSale').value ? parseFloat(document.getElementById('cSale').value) : null,
+        badge:     document.getElementById('cBadge').value,
+      };
+      if(mTarget.id) {
+        body.id = mTarget.id;
+        await req('POST','/api/updateClothing', body);
+      } else {
+        await req('POST','/api/clothing', body);
+      }
+      toast('Item saved ✓'); loadAdminClothing(); closeModal();
+    }
+    if(mMode==='user') {
+      const d = await req('POST','/api/register',{
+        name: document.getElementById('uName').value.trim(),
+        email: document.getElementById('uEmail').value.trim(),
+        password: document.getElementById('uPass').value,
+      });
+      if(!d.ok) throw new Error(d.error);
+      toast('User added ✓'); loadUsers(); closeModal();
+    }
+  } catch(e) { toast(e.message,'err'); }
+}
+
+function closeModal() { document.getElementById('modalBg').classList.remove('open'); }
+function editClothing(item) { openModal('clothing', item); }
+
+function previewPhoto(url) {
+  const wrap = document.getElementById('photoPreviewWrap');
+  const img  = document.getElementById('photoPreview');
+  if(!wrap||!img) return;
+  if(url) {
+    wrap.style.display='block';
+    wrap.style.gridColumn='1/-1';
+    img.src=url;
+    img.onerror=()=>{ wrap.style.display='none'; };
+  } else {
+    wrap.style.display='none';
+  }
+}
+
+// ═══ SAFE HTML ═══
+function esc(str) {
+  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function escAttr(str) {
+  return String(str||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// ═══ INIT ═══
+window.addEventListener('DOMContentLoaded', () => {
+  initAvatar();
+  drawAvatar();
+});
+</script>
+</body>
+</html>
